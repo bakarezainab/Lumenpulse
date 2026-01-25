@@ -32,7 +32,6 @@ import { TestController } from './test/test.controller';
     }),
     UsersModule,
   ],
-  controllers: [AppController],
   controllers: [AppController, TestController],
   providers: [AppService],
 })
