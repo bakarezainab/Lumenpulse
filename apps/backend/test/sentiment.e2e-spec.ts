@@ -3,6 +3,19 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { SentimentService } from '../src/sentiment/sentiment.service';
+import { SentimentResponse } from '../src/sentiment/sentiment.service';
+import { HealthResponse } from '../src/sentiment/sentiment.service';
+
+// Mock interfaces for testing
+interface MockedSentimentResponse extends SentimentResponse {
+  sentiment: number;
+}
+
+interface MockedHealthResponse extends HealthResponse {
+  status: string;
+  timestamp: string;
+  service: string;
+}
 
 describe('SentimentController (e2e)', () => {
   let app: INestApplication;
@@ -25,16 +38,18 @@ describe('SentimentController (e2e)', () => {
 
   describe('POST /sentiment/analyze', () => {
     it('should analyze sentiment successfully', () => {
-      // Mock the service method if Python API is not available
-      jest.spyOn(sentimentService, 'analyzeSentiment').mockResolvedValue({
+      // Mock the service method with proper typing
+      const mockResponse: MockedSentimentResponse = {
         sentiment: 0.85,
-      });
+      };
+      
+      jest.spyOn(sentimentService, 'analyzeSentiment').mockResolvedValue(mockResponse);
 
       return request(app.getHttpServer())
         .post('/sentiment/analyze')
         .send({ text: 'This is amazing!' })
         .expect(201)
-        .expect(res => {
+        .expect((res) => {
           expect(res.body).toHaveProperty('sentiment');
           expect(typeof res.body.sentiment).toBe('number');
           expect(res.body.sentiment).toBeGreaterThanOrEqual(-1);
@@ -47,7 +62,7 @@ describe('SentimentController (e2e)', () => {
         .post('/sentiment/analyze')
         .send({ text: '' })
         .expect(400)
-        .expect(res => {
+        .expect((res) => {
           expect(res.body.message).toContain('Text cannot be empty');
         });
     });
@@ -62,17 +77,19 @@ describe('SentimentController (e2e)', () => {
 
   describe('GET /sentiment/health', () => {
     it('should return health status', () => {
-      // Mock the service method
-      jest.spyOn(sentimentService, 'checkHealth').mockResolvedValue({
+      // Mock the service method with proper typing
+      const mockResponse: MockedHealthResponse = {
         status: 'healthy',
         timestamp: '2024-01-01T12:00:00Z',
         service: 'sentiment-analysis',
-      });
+      };
+      
+      jest.spyOn(sentimentService, 'checkHealth').mockResolvedValue(mockResponse);
 
       return request(app.getHttpServer())
         .get('/sentiment/health')
         .expect(200)
-        .expect(res => {
+        .expect((res) => {
           expect(res.body).toHaveProperty('status', 'healthy');
           expect(res.body).toHaveProperty('timestamp');
           expect(res.body).toHaveProperty('service', 'sentiment-analysis');

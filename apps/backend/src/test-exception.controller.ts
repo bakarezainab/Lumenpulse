@@ -143,12 +143,13 @@ export class TestExceptionController {
           actual,
           match,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
         results.push({
           text: testCase.text.substring(0, 50) + (testCase.text.length > 50 ? '...' : ''),
-          error: error.message,
           expected: testCase.expected,
           status: 'failed',
+          error: errorMessage,
         });
       }
     }
@@ -204,10 +205,12 @@ export class TestExceptionController {
         const sentimentTest = await this.testSentiment();
         results.sentimentTests = sentimentTest;
         results.summary.sentimentServiceAvailable = true;
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
         results.sentimentTests = {
           timestamp: new Date().toISOString(),
           status: 'failed',
+          message: `Sentiment test failed: ${errorMessage}`,
           totalTests: 0,
           successful: 0,
           matches: 0,
@@ -215,7 +218,7 @@ export class TestExceptionController {
             text: 'Sentiment service test',
             expected: 'n/a',
             status: 'error',
-            error: error.message,
+            error: errorMessage,
           }],
           pythonApiUrl: process.env.PYTHON_API_URL || 'http://localhost:8000',
           serviceAvailable: false,
@@ -229,4 +232,3 @@ export class TestExceptionController {
     return results;
   }
 }
-
