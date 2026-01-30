@@ -76,7 +76,7 @@ export class AuthService {
   /**
    * Generate a cryptographic challenge for the user to sign
    */
-  
+
   // eslint-disable-next-line @typescript-eslint/require-await
   async generateChallenge(publicKey: string): Promise<{
     challenge: string;
@@ -86,7 +86,7 @@ export class AuthService {
     // Validate public key format
     try {
       Keypair.fromPublicKey(publicKey);
-    }catch (_error) {
+    }catch{
   throw new BadRequestException('Invalid Stellar public key format');
 }
 
@@ -184,7 +184,7 @@ export class AuthService {
     
     try {
       transaction = new Transaction(signedChallenge, networkPassphrase);
-    } catch (_error) {
+    } catch{
       this.challengeStore.delete(publicKey);
       throw new BadRequestException('Invalid transaction format');
     }

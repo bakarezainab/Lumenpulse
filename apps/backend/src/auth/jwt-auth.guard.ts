@@ -7,7 +7,6 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
-import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -59,7 +58,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   err: unknown,
   user: TUser,
   info: unknown,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _context: ExecutionContext,
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _status?: unknown,
 ): TUser {
   if (err || !user) {
