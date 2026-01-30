@@ -20,7 +20,11 @@ impl UpgradableContract {
     }
 
     pub fn upgrade(env: Env, new_wasm_hash: soroban_sdk::BytesN<32>) {
-        let admin: Address = env.storage().instance().get(&DataKey::Admin).expect("not initialized");
+        let admin: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::Admin)
+            .expect("not initialized");
         admin.require_auth();
 
         env.deployer().update_current_contract_wasm(new_wasm_hash);
